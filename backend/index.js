@@ -6,9 +6,20 @@ import userRoute from "./routes/auth.user.js";
 import cookieParser from "cookie-parser";
 import postRoute from "./routes/post.route.js";
 import notificationsRoute from "./routes/notification.route.js";
+import { v2 as cloudinary } from "cloudinary";
 import cors from "cors";
 dotenv.config();
+console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET);
+
 const app = express();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const port = process.env.PORT || 3000;
 app.use(express.json());

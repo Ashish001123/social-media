@@ -1,134 +1,94 @@
-// import { create } from 'zustand';
-// import axiosInstance from "../config/axios.js";
-
-// const usePostsStore = create((set) => ({
-//     posts: [],
-//     isPending: false,
-//     isError: null,
-//     createPost: async (post) => {
-//        try {
-//            set({ isPending: true , isError: null });
-//            const res = await axiosInstance.post("/posts/createPost", post);
-//            if (res.status === 201) {
-//                set((state) => ({ posts: [...state.posts, res.data], isPending: false }));
-//            }
-//        } catch (error) {
-//            console.error("Error creating post:", error);
-//            set({ error: error.message, isPending: false });
-//        }
-//     },
-//     deletePost: async (postId) => {
-//         try {
-//             set({ isPending: true, isError: null });
-//             const res = await axiosInstance.delete(`/posts/${postId}`);
-//             if (res.status === 200) {
-//                 set((state) => ({
-//                     posts: state.posts.filter((post) => post._id !== postId),
-//                     isPending: false
-//                 }));
-//             }
-//         } catch (error) {
-//             console.error("Error deleting post:", error);
-//             set({ error: error.message, isPending: false });
-//         }
-//     },
-//     commentPost: async (postId, comment) => {
-//         try {
-//             set({ isPending: true, isError: null });
-//             const res = await axiosInstance.post(`/posts/${postId}/comments`, { text: comment });
-//             if (res.status === 201) {
-//                 set((state) => {
-//                     const updatedPosts = state.posts.map((post) => {
-//                         if (post._id === postId) {
-//                             return { ...post, comments: [...post.comments, res.data] };
-//                         }
-//                         return post;
-//                     });
-//                     return { posts: updatedPosts, isPending: false };
-//                 });
-//             }
-//         } catch (error) {
-//             console.error("Error commenting on post:", error);
-//             set({ error: error.message, isPending: false });
-//         }
-//     }
-// }));
-
-
-
-// export default usePostsStore;
-
-
-
-
-
-
-
 import { create } from "zustand";
 import axiosInstance from "../config/axios.js";
+import toast from "react-hot-toast";
+
+
 
 const usePostsStore = create((set) => ({
   posts: [],
   isPending: false,
   error: null,
+  isDeleting: false,
+  isLiking: false,
 
-  // CREATE POST
-  createPost: async (post) => {
+  fetchPosts: async () => {
+    set({ isLoading: true });
     try {
-      set({ isPending: true, error: null });
+      const res = await axiosInstance.get("/posts");
+      set({ posts: res.data, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
 
-      const res = await axiosInstance.post("/posts/createPost", post);
-
+  createPost: async (postData) => {
+    set({ isPending: true, error: null });
+    try {
+      const res = await axiosInstance.post("/posts/createPost", postData);
       set((state) => ({
         posts: [res.data.post, ...state.posts],
         isPending: false,
       }));
-    } catch (err) {
-      set({ error: err.message, isPending: false });
+      toast.success("Post created successfully!");
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Something went wrong",
+        isPending: false,
+      });
+      toast.error("Failed to create post");
     }
   },
-
-  // DELETE POST
   deletePost: async (postId) => {
     try {
-      set({ isPending: true, error: null });
-
+      set({ isDeleting: true });
       await axiosInstance.delete(`/posts/${postId}`);
-
       set((state) => ({
-        posts: state.posts.filter((p) => p._id !== postId),
-        isPending: false,
+        posts: state.posts.filter((post) => post._id !== postId),
+        isDeleting: false,
       }));
-    } catch (err) {
-      set({ error: err.message, isPending: false });
+      toast.success("Post deleted successfully!");
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Something went wrong",
+        isDeleting: false,
+      });
+      toast.error("Failed to delete post");
     }
   },
+ likeOnPost: async (postId) => {
+  try {
+    set({ isLiking: true });
 
-  // COMMENT POST
-  commentPost: async (postId, text) => {
+    const res = await axiosInstance.post(`/posts/like/${postId}`);
+
+    set((state) => ({
+      posts: state.posts.map((post) =>
+        post._id === postId ? res.data.post : post
+      ),
+      isLiking: false,
+    }));
+  } catch (error) {
+    set({
+      error: error.response?.data?.message || "Something went wrong",
+      isLiking: false,
+    });
+  }
+  },
+  commentOnPost: async (postId, text) => {
     try {
-      set({ isPending: true, error: null });
-
-      const res = await axiosInstance.post(
-        `/posts/${postId}/comments`,
-        { text }
-      );
-
+      const res = await axiosInstance.post(`/posts/comment/${postId}`, { text });
       set((state) => ({
         posts: state.posts.map((post) =>
-          post._id === postId
-            ? {
-                ...post,
-                comments: [...post.comments, res.data.comment],
-              }
-            : post
+          post._id === postId ? res.data.post : post
         ),
-        isPending: false,
-      }));
-    } catch (err) {
-      set({ error: err.message, isPending: false });
-    }
+     }));
+   } catch (error) {
+     set({
+       error: error.response?.data?.message || "Something went wrong",
+     });
+   }
   },
+
 }));
 
 export default usePostsStore;
