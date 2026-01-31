@@ -7,13 +7,18 @@ import { useEffect } from "react";
 
 const RightPanel = () => {
 
-	const { fetchSuggestedUsers, isLoading, suggestedUsers } = useUserStore();
+	const { fetchSuggestedUsers, isLoading, suggestedUsers , isFollowLoading, followUnfollowUser} = useUserStore();
 
 	useEffect(() => {
 		fetchSuggestedUsers();
 	}, [fetchSuggestedUsers]);
 
 	if (suggestedUsers?.length === 0) return <div className='md:w-64 w-0'></div>;
+
+	const handleFollowUnfollow = (e, userId) => {
+		e.preventDefault();
+		followUnfollowUser(userId);
+	};
 
 	return (
 		<div className='hidden lg:block my-4 mx-2'>
@@ -53,11 +58,10 @@ const RightPanel = () => {
 									<button
 										className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
 										onClick={(e) => {
-											e.preventDefault();
-											// follow(user._id);
+											handleFollowUnfollow(e ,user._id);
 										}}
 									>
-										{isLoading ? "Loading..." : "Follow"}
+										{isFollowLoading ? "Loading..." : "Follow"}
 									</button>
 								</div>
 							</Link>

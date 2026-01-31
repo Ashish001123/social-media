@@ -4,6 +4,7 @@ import axiosInstance from "../config/axios.js";
 const useUserStore = create((set) => ({
   user: null,
   isLoading: false,
+  isFollowLoading: false,
   error: null,
   suggestedUsers: [],
 
@@ -15,7 +16,17 @@ const useUserStore = create((set) => ({
     } catch (error) {
       set({ error: error.message, isLoading: false });
     }
+  },
+  followUnfollowUser: async (userId) => {
+    set({ isFollowLoading: true });
+    try {
+       await axiosInstance.post(`/users/follow/${userId}`);
+      set({isFollowLoading: false });
+      const suggestedUsers = await axiosInstance.get("/users/suggested");
+      set({ suggestedUsers: suggestedUsers.data });
+    } catch (error) {
+      set({ error: error.message, isFollowLoading: false });
+    }
   }
 }));
-
 export default useUserStore;
