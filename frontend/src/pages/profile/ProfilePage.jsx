@@ -30,6 +30,7 @@ const ProfilePage = () => {
   const imgRef = useRef(null);
 
   const isMyProfile = true; // Since this is the authenticated user's profile
+  const { fetchUserPosts, fetchLikedPosts } = usePostsStore();
 
   useEffect(() => {
     if (!isLoading && !authUser) {
@@ -40,6 +41,14 @@ const ProfilePage = () => {
   if (isLoading || !authUser) {
     return <ProfileHeaderSkeleton />;
   }
+
+  useEffect(() => {
+  if (feedType === "posts") {
+    fetchUserPosts(authUser.username);
+  } else {
+    fetchLikedPosts();
+  }
+}, [feedType, authUser.username]);
 
 
   const handleImgChange = (e, type) => {

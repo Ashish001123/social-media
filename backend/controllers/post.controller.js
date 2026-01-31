@@ -186,3 +186,24 @@ export const getFollowingPosts = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+export const getUserPosts = async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posts = await Post.find({ user: user._id })
+      .populate("user", "-password")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log("Error in getUserPosts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

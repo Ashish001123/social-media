@@ -2,8 +2,6 @@ import { create } from "zustand";
 import axiosInstance from "../config/axios.js";
 import toast from "react-hot-toast";
 
-
-
 const usePostsStore = create((set) => ({
   posts: [],
   isPending: false,
@@ -108,6 +106,27 @@ const usePostsStore = create((set) => ({
       set({ isLoading: false });
     }
   },
+  fetchLikedPosts: async () => {
+  set({ isLoading: true });
+  try {
+    const res = await axiosInstance.get("/posts/likes");
+    set({ posts: res.data, isLoading: false });
+  } catch {
+    set({ isLoading: false });
+  }
+  },
+  
+
+  fetchUserPosts: async (username) => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get(`/posts/user/${username}`);
+      set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
+  },
+
 
 }));
 
