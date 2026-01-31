@@ -27,6 +27,17 @@ const useUserStore = create((set) => ({
     } catch (error) {
       set({ error: error.message, isFollowLoading: false });
     }
-  }
+  },
+  fetchNotifications: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/notifications");
+      set({ notifications: res.data, isLoading: false });
+      
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+  
 }));
 export default useUserStore;

@@ -5,7 +5,15 @@ import usePostsStore from "../../store/posts.store.js";
 
 const HomePage = () => {
   const [feedType, setFeedType] = useState("forYou");
-  const { posts, fetchPosts, isLoading } = usePostsStore();
+  const { posts, fetchPosts, isLoading, fetchFollowingPosts , fetchForYouPosts } = usePostsStore();
+
+  useEffect(() => {
+  if (feedType === "forYou") {
+    fetchForYouPosts();
+  } else {
+    fetchFollowingPosts();
+  }
+}, [feedType]);
 
   useEffect(() => {
     fetchPosts();

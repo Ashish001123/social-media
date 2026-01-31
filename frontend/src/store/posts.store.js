@@ -89,6 +89,26 @@ const usePostsStore = create((set) => ({
    }
   },
 
+  fetchForYouPosts: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts");
+      set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchFollowingPosts: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts/following");
+      set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
+  },
+
 }));
 
 export default usePostsStore;

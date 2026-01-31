@@ -29,6 +29,8 @@ const ProfilePage = () => {
   const profileImgRef = useRef(null);
   const imgRef = useRef(null);
 
+  const isMyProfile = true; // Since this is the authenticated user's profile
+
   useEffect(() => {
     if (!isLoading && !authUser) {
       navigate("/login");
@@ -39,7 +41,6 @@ const ProfilePage = () => {
     return <ProfileHeaderSkeleton />;
   }
 
-  const isMyProfile = true;
 
   const handleImgChange = (e, type) => {
     const file = e.target.files[0];
