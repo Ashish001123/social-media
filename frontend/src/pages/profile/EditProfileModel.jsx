@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import useUpdateUserProfile from "../../hooks/useUpdateUserProfile.jsx";
+import useUserStore from "../../store/user.store.js";
+
 
 const EditProfileModal = ({ authUser }) => {
 	const [formData, setFormData] = useState({
@@ -12,7 +13,7 @@ const EditProfileModal = ({ authUser }) => {
 		currentPassword: "",
 	});
 
-	const { updateProfile, isUpdatingProfile } = useUpdateUserProfile();
+	const { updateProfile, isUpdatingProfile } = useUserStore();
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,7 +22,7 @@ const EditProfileModal = ({ authUser }) => {
 	useEffect(() => {
 		if (authUser) {
 			setFormData({
-				fullName: authUser.fullName,
+				fullName: authUser.fullname,
 				username: authUser.username,
 				email: authUser.email,
 				bio: authUser.bio,
@@ -31,6 +32,20 @@ const EditProfileModal = ({ authUser }) => {
 			});
 		}
 	}, [authUser]);
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		updateProfile(formData);
+		setFormData({
+			fullName: "",
+			username: "",
+			email: "",
+			bio: "",
+			link: "",
+			newPassword: "",
+			currentPassword: "",
+		});
+	};
 
 	return (
 		<>
@@ -45,18 +60,15 @@ const EditProfileModal = ({ authUser }) => {
 					<h3 className='font-bold text-lg my-3'>Update Profile</h3>
 					<form
 						className='flex flex-col gap-4'
-						onSubmit={(e) => {
-							e.preventDefault();
-							updateProfile(formData);
-						}}
+						onSubmit={handleSubmit}
 					>
 						<div className='flex flex-wrap gap-2'>
 							<input
 								type='text'
 								placeholder='Full Name'
 								className='flex-1 input border border-gray-700 rounded p-2 input-md'
-								value={formData.fullName}
-								name='fullName'
+								value={formData.fullname}
+								name='fullname'
 								onChange={handleInputChange}
 							/>
 							<input
@@ -124,3 +136,5 @@ const EditProfileModal = ({ authUser }) => {
 	);
 };
 export default EditProfileModal;
+
+

@@ -2,11 +2,13 @@ import { create } from "zustand";
 import axiosInstance from "../config/axios.js";
 import toast from "react-hot-toast";
 
+
 const useAuthStore = create((set) => ({
   authUser: null,
   isLoading: true,
   isPending: false,
   error: null,
+  profileLoading: false,
 
   checkAuth: async () => {
     try {
@@ -88,6 +90,35 @@ const useAuthStore = create((set) => ({
       set({ isPending: false });
     }
   },
+  fetchProfileUser: async (username) => {
+    set({ profileLoading: true });
+    try {
+      const res = await axiosInstance.get(
+        `/users/profile/${username}`
+      );
+      set({ profileUser: res.data, profileLoading: false });
+    } catch (error) {
+      set({ profileUser: null, profileLoading: false });
+      toast.error("Failed to fetch profile user", error);
+    }
+  },
+  updateProfileImages: async ({ profileImg, coverImg }) => {
+    try {
+      const res = await axiosInstance.post("/users/update", {
+        profileImg,
+        coverImg,
+      });
+
+      set((state) => ({
+        authUser: { ...state.authUser, ...res.data },
+      }));
+
+      toast.success("Images updated");
+    } catch {
+      toast.error("Image upload failed");
+    }
+  },
+  
 }));
 
 export default useAuthStore;

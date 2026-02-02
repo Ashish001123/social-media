@@ -22,7 +22,8 @@ cloudinary.config({
 });
 
 const port = process.env.PORT || 3000;
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true

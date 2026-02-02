@@ -53,38 +53,40 @@ const usePostsStore = create((set) => ({
       toast.error("Failed to delete post");
     }
   },
- likeOnPost: async (postId) => {
-  try {
-    set({ isLiking: true });
+  likeOnPost: async (postId) => {
+    try {
+      set({ isLiking: true });
 
-    const res = await axiosInstance.post(`/posts/like/${postId}`);
+      const res = await axiosInstance.post(`/posts/like/${postId}`);
 
-    set((state) => ({
-      posts: state.posts.map((post) =>
-        post._id === postId ? res.data.post : post
-      ),
-      isLiking: false,
-    }));
-  } catch (error) {
-    set({
-      error: error.response?.data?.message || "Something went wrong",
-      isLiking: false,
-    });
-  }
+      set((state) => ({
+        posts: state.posts.map((post) =>
+          post._id === postId ? res.data.post : post,
+        ),
+        isLiking: false,
+      }));
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Something went wrong",
+        isLiking: false,
+      });
+    }
   },
   commentOnPost: async (postId, text) => {
     try {
-      const res = await axiosInstance.post(`/posts/comment/${postId}`, { text });
+      const res = await axiosInstance.post(`/posts/comment/${postId}`, {
+        text,
+      });
       set((state) => ({
         posts: state.posts.map((post) =>
-          post._id === postId ? res.data.post : post
+          post._id === postId ? res.data.post : post,
         ),
-     }));
-   } catch (error) {
-     set({
-       error: error.response?.data?.message || "Something went wrong",
-     });
-   }
+      }));
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || "Something went wrong",
+      });
+    }
   },
 
   fetchForYouPosts: async () => {
@@ -107,15 +109,14 @@ const usePostsStore = create((set) => ({
     }
   },
   fetchLikedPosts: async () => {
-  set({ isLoading: true });
-  try {
-    const res = await axiosInstance.get("/posts/likes");
-    set({ posts: res.data, isLoading: false });
-  } catch {
-    set({ isLoading: false });
-  }
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts/likes");
+      set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
   },
-  
 
   fetchUserPosts: async (username) => {
     set({ isLoading: true });
@@ -126,8 +127,6 @@ const usePostsStore = create((set) => ({
       set({ isLoading: false });
     }
   },
-
-
 }));
 
 export default usePostsStore;
