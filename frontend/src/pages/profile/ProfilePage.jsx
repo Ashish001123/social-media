@@ -54,7 +54,7 @@ const ProfilePage = () => {
     feedType === "posts"
       ? fetchUserPosts(username)
       : fetchLikedPosts(username);
-  }, [feedType, userername]);
+  }, [feedType, username]);
 
   if (authLoading || profileLoading) return <ProfileHeaderSkeleton />;
   if (!user) return <p className="text-center mt-10">User not found</p>;
