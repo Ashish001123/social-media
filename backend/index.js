@@ -24,8 +24,23 @@ cloudinary.config({
 const port = process.env.PORT || 3000;
 app.use(express.json({ limit: "20mb" }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
+// app.use(cors({
+//   origin: process.env.CLIENT_API_KEY,
+//   credentials: true
+// }));
+const allowedOrigins = [
+  process.env.CLIENT_API_KEY,
+  process.env.CLIENT_API_KEY2
+];
+
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
 app.use(express.urlencoded({ extended: true }));
