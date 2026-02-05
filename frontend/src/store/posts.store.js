@@ -109,14 +109,14 @@ const usePostsStore = create((set) => ({
     }
   },
   fetchLikedPosts: async () => {
-    set({ isLoading: true });
-    try {
-      const res = await axiosInstance.get("/posts/likes");
-      set({ posts: res.data, isLoading: false });
-    } catch {
-      set({ isLoading: false });
-    }
-  },
+  set({ isLoading: true });
+  try {
+    const res = await axiosInstance.get("/posts/likes");
+    set({ posts: res.data, isLoading: false });
+  } catch {
+    set({ isLoading: false });
+  }
+},
 
   fetchUserPosts: async (username) => {
     set({ isLoading: true });

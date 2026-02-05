@@ -22,3 +22,4 @@ router.delete("/:id", protectRoute, deletePost);
 router.post("/comment/:id", protectRoute, commentOnPost);
 router.post("/like/:id", protectRoute, likeOnPost);
 export default router;
+ 

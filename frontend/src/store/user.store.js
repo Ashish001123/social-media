@@ -48,6 +48,17 @@ const useUserStore = create((set) => ({
       set({ error: error.message, isUpdatingProfile: false });
       toast.error("Failed to update profile");
     }
+  },
+  deleteNotification: async (notificationId) =>{
+    set({ isLoading: true });
+    try {
+      await axiosInstance.delete(`/notifications/${notificationId}`);
+      set({ isLoading: false });
+      toast.success("Notification deleted successfully!");
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+      toast.error("Failed to delete notification");
+    }
   }
 }));
 export default useUserStore;

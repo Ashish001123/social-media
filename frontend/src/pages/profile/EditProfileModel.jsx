@@ -4,7 +4,7 @@ import useUserStore from "../../store/user.store.js";
 
 const EditProfileModal = ({ authUser }) => {
 	const [formData, setFormData] = useState({
-		fullName: "",
+		fullname: "",
 		username: "",
 		email: "",
 		bio: "",
@@ -22,7 +22,7 @@ const EditProfileModal = ({ authUser }) => {
 	useEffect(() => {
 		if (authUser) {
 			setFormData({
-				fullName: authUser.fullname,
+				fullname: authUser.fullname,
 				username: authUser.username,
 				email: authUser.email,
 				bio: authUser.bio,
@@ -36,15 +36,6 @@ const EditProfileModal = ({ authUser }) => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		updateProfile(formData);
-		setFormData({
-			fullName: "",
-			username: "",
-			email: "",
-			bio: "",
-			link: "",
-			newPassword: "",
-			currentPassword: "",
-		});
 	};
 
 	return (

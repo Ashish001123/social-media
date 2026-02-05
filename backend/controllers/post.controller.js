@@ -86,12 +86,52 @@ export const commentOnPost = async (req, res) => {
   }
 };
 
+// export const likeOnPost = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const { id: postId } = req.params;
+
+//     const post = await Post.findById(postId);
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     const isLiked = post.likes.some(
+//       (id) => id.toString() === userId.toString()
+//     );
+
+//     if (isLiked) {
+//       await Post.updateOne(
+//         { _id: postId },
+//         { $pull: { likes: userId } }
+//       );
+//     } else {
+//       await Post.updateOne(
+//         { _id: postId },
+//         { $addToSet: { likes: userId } }
+//       );
+//     }
+
+//     const updatedPost = await Post.findById(postId)
+//       .populate("user", "-password")
+//       .populate("comments.user", "-password");
+
+//     return res.status(200).json({ post: updatedPost });
+//   } catch (error) {
+//     console.log("Error in likeOnPost:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
 export const likeOnPost = async (req, res) => {
   try {
     const userId = req.user._id;
     const { id: postId } = req.params;
 
     const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -101,16 +141,17 @@ export const likeOnPost = async (req, res) => {
     );
 
     if (isLiked) {
-      await Post.updateOne(
-        { _id: postId },
-        { $pull: { likes: userId } }
-      );
+      // UNLIKE
+      post.likes.pull(userId);
+      user.likedPosts.pull(postId);
     } else {
-      await Post.updateOne(
-        { _id: postId },
-        { $addToSet: { likes: userId } }
-      );
+      // LIKE
+      post.likes.push(userId);
+      user.likedPosts.push(postId);
     }
+
+    await post.save();
+    await user.save();
 
     const updatedPost = await Post.findById(postId)
       .populate("user", "-password")
@@ -122,6 +163,7 @@ export const likeOnPost = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 export const getAllPosts = async (req, res) => {
@@ -146,28 +188,52 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
+// export const getLikedPosts = async (req, res) => {
+//   const userId = req.params.id;
+//   try {
+//     const user = await User.findById(userId).populate("likedPosts");
+//     console.log("User found:", user);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+//     const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
+//       .populate({
+//         path: "user",
+//         select: "-password",
+//       })
+//       .populate({
+//         path: "comments.user",
+//         select: "-password",
+//       });
+//     return res.status(200).json(likedPosts);
+//   } catch (error) {
+//     console.log("Error in getLikedPosts:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 export const getLikedPosts = async (req, res) => {
-  const userId = req.params.id;
   try {
+    const userId = req.user._id; 
+
     const user = await User.findById(userId).populate("likedPosts");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
-      .populate({
-        path: "user",
-        select: "-password",
-      })
-      .populate({
-        path: "comments.user",
-        select: "-password",
-      });
-    return res.status(200).json(likedPosts);
+
+    const likedPosts = await Post.find({
+      _id: { $in: user.likedPosts },
+    })
+      .populate("user", "-password")
+      .populate("comments.user", "-password");
+
+    res.status(200).json(likedPosts);
   } catch (error) {
     console.log("Error in getLikedPosts:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 export const getFollowingPosts = async (req, res) => {

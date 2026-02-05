@@ -53,7 +53,7 @@ const ProfilePage = () => {
     if (!username) return;
     feedType === "posts"
       ? fetchUserPosts(username)
-      : fetchLikedPosts(username);
+      : fetchLikedPosts();
   }, [feedType, username]);
 
   if (authLoading || profileLoading) return <ProfileHeaderSkeleton />;
@@ -63,7 +63,7 @@ const ProfilePage = () => {
 
   const handleImageChange = (e, type) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) return; 
 
     const reader = new FileReader();
     reader.onloadend = () => {
