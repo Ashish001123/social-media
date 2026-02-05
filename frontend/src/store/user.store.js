@@ -8,6 +8,7 @@ const useUserStore = create((set) => ({
   isFollowLoading: false,
   error: null,
   suggestedUsers: [],
+  notifications: [],
   isUpdatingProfile: false,
   fetchSuggestedUsers: async () => {
     set({ isLoading: true });
@@ -49,16 +50,19 @@ const useUserStore = create((set) => ({
       toast.error("Failed to update profile");
     }
   },
-  deleteNotification: async (notificationId) =>{
-    set({ isLoading: true });
-    try {
-      await axiosInstance.delete(`/notifications/${notificationId}`);
-      set({ isLoading: false });
-      toast.success("Notification deleted successfully!");
-    } catch (error) {
-      set({ error: error.message, isLoading: false });
-      toast.error("Failed to delete notification");
-    }
+ deleteAllNotifications: async () => {
+  set({ isLoading: true });
+  try {
+    await axiosInstance.delete("/notifications");
+    set({ notifications: [], isLoading: false });
+
+    toast.success("Notifications deleted successfully!");
+  } catch (error) {
+    set({ error: error.message, isLoading: false });
+    toast.error("Failed to delete notifications");
   }
+}
+
+
 }));
 export default useUserStore;

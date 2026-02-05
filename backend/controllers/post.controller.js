@@ -59,6 +59,70 @@ export const deletePost = async (req, res) => {
   }
 };
 
+// export const commentOnPost = async (req, res) => {
+//   try {
+//     const { text } = req.body;
+//     const postId = req.params.id;
+//     const userId = req.user._id;
+
+//     if (!text) {
+//       return res.status(400).json({ message: "Comment text is required" });
+//     }
+
+//     const post = await Post.findById(postId);
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     post.comments.push({ text, user: userId });
+//     await post.save();
+
+//     return res
+//       .status(201)
+//       .json({ message: "Comment added successfully", post });
+//   } catch (error) {
+//     console.log("Error in commentOnPost:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+// export const commentOnPost = async (req, res) => {
+//   try {
+//     const { text } = req.body;
+//     const postId = req.params.id;
+//     const userId = req.user._id;
+
+//     if (!text) {
+//       return res.status(400).json({ message: "Comment text is required" });
+//     }
+
+//     const post = await Post.findById(postId);
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     post.comments.push({ text, user: userId });
+//     await post.save();
+
+//     // 🔥 POPULATE BEFORE SENDING RESPONSE
+//     const updatedPost = await Post.findById(postId)
+//       .populate("user", "-password")
+//       .populate("comments.user", "username profileImg");
+
+//     return res.status(201).json({
+//       message: "Comment added successfully",
+//       post: updatedPost,
+//     });
+//   } catch (error) {
+//     console.log("Error in commentOnPost:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+
+
 export const commentOnPost = async (req, res) => {
   try {
     const { text } = req.body;
@@ -73,18 +137,29 @@ export const commentOnPost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
-
     post.comments.push({ text, user: userId });
     await post.save();
+    if (post.user.toString() !== userId.toString()) {
+      await Notification.create({
+        from: userId,
+        to: post.user,
+        type: "comment",
+      });
+    }
+    const updatedPost = await Post.findById(postId)
+      .populate("user", "-password")
+      .populate("comments.user", "username profileImg");
 
-    return res
-      .status(201)
-      .json({ message: "Comment added successfully", post });
+    return res.status(201).json({
+      message: "Comment added successfully",
+      post: updatedPost,
+    });
   } catch (error) {
     console.log("Error in commentOnPost:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // export const likeOnPost = async (req, res) => {
 //   try {
