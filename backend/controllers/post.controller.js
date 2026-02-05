@@ -124,6 +124,46 @@ export const commentOnPost = async (req, res) => {
 // };
 
 
+// export const likeOnPost = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const { id: postId } = req.params;
+
+//     const post = await Post.findById(postId);
+//     const user = await User.findById(userId);
+
+//     if (!post) {
+//       return res.status(404).json({ message: "Post not found" });
+//     }
+
+//     const isLiked = post.likes.some(
+//       (id) => id.toString() === userId.toString()
+//     );
+
+//     if (isLiked) {
+//       // UNLIKE
+//       post.likes.pull(userId);
+//       user.likedPosts.pull(postId);
+//     } else {
+//       // LIKE
+//       post.likes.push(userId);
+//       user.likedPosts.push(postId);
+//     }
+
+//     await post.save();
+//     await user.save();
+
+//     const updatedPost = await Post.findById(postId)
+//       .populate("user", "-password")
+//       .populate("comments.user", "-password");
+
+//     return res.status(200).json({ post: updatedPost });
+//   } catch (error) {
+//     console.log("Error in likeOnPost:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 export const likeOnPost = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -148,6 +188,15 @@ export const likeOnPost = async (req, res) => {
       // LIKE
       post.likes.push(userId);
       user.likedPosts.push(postId);
+
+      // 🔔 CREATE NOTIFICATION (IMPORTANT)
+      if (post.user.toString() !== userId.toString()) {
+        await Notification.create({
+          from: userId,
+          to: post.user,
+          type: "like",
+        });
+      }
     }
 
     await post.save();
@@ -157,12 +206,13 @@ export const likeOnPost = async (req, res) => {
       .populate("user", "-password")
       .populate("comments.user", "-password");
 
-    return res.status(200).json({ post: updatedPost });
+    res.status(200).json({ post: updatedPost });
   } catch (error) {
     console.log("Error in likeOnPost:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
