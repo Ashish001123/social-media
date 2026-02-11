@@ -25,7 +25,7 @@ const useUserStore = create((set) => ({
       await axiosInstance.post(`/users/follow/${userId}`);
       set({ isFollowLoading: false });
       const suggestedUsers = await axiosInstance.get("/users/suggested");
-      set({ suggestedUsers: suggestedUsers.data });
+      set({ suggestedUsers: suggestedUsers.data , isFollowLoading: false });
     } catch (error) {
       set({ error: error.message, isFollowLoading: false });
     }

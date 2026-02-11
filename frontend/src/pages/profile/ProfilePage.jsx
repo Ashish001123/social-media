@@ -30,7 +30,6 @@ const ProfilePage = () => {
   } = useAuthStore();
 
   const { posts, fetchUserPosts, fetchLikedPosts } = usePostsStore();
-
   const isMyProfile = authUser?.username === username;
   const user = isMyProfile ? authUser : profileUser;
 
@@ -198,7 +197,6 @@ const ProfilePage = () => {
           Likes
         </button>
       </div>
-
       <Posts feedType={feedType} username={username} posts={posts} />
     </div>
   );

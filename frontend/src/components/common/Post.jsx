@@ -24,11 +24,14 @@ const Post = ({ post }) => {
   const isCommenting = false;
   
 
-  const { deletePost , isDeleting, likeOnPost , isLiking , commentOnPost } = usePostsStore();
+  const { deletePost, isDeleting, likeOnPost, isLiking, commentOnPost , savePosts , savePostLoading , savedPosts } = usePostsStore();
 
   const handleDeletePost = () => {
     deletePost(post._id);
   };
+  const isSaved = savedPosts.some(
+  (savedPost) => savedPost._id === post._id
+);
 
   const handlePostComment = (e) => {
     e.preventDefault();
@@ -186,9 +189,24 @@ const Post = ({ post }) => {
                 </span>
               </div>
             </div>
-            <div className="flex w-1/3 justify-end gap-2 items-center">
+            {/* <div className="flex w-1/3 justify-end gap-2 items-center">
               <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer" />
-            </div>
+            </div> */}
+            <div
+  className="cursor-pointer"
+  onClick={() => savePosts(post._id)}
+>
+  {savePostLoading ? (
+    <LoadingSpinner size="sm" />
+  ) : (
+    <FaRegBookmark
+      className={`w-4 h-4 ${
+        isSaved ? "text-yellow-400" : "text-slate-500"
+      }`}
+    />
+  )}
+</div>
+
           </div>
         </div>
       </div>

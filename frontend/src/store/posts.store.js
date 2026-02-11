@@ -8,12 +8,23 @@ const usePostsStore = create((set) => ({
   error: null,
   isDeleting: false,
   isLiking: false,
+  savePostLoading: false,
+  savedPosts: [],
 
   fetchPosts: async () => {
     set({ isLoading: true });
     try {
       const res = await axiosInstance.get("/posts");
       set({ posts: res.data, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+  fetchSavedPosts: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts/saved");
+      set({ savedPosts: res.data, isLoading: false });
     } catch (error) {
       set({ error: error.message, isLoading: false });
     }
@@ -109,20 +120,46 @@ const usePostsStore = create((set) => ({
     }
   },
   fetchLikedPosts: async () => {
-  set({ isLoading: true });
-  try {
-    const res = await axiosInstance.get("/posts/likes");
-    set({ posts: res.data, isLoading: false });
-  } catch {
-    set({ isLoading: false });
-  }
-},
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts/likes");
+      set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
+  },
 
   fetchUserPosts: async (username) => {
     set({ isLoading: true });
     try {
       const res = await axiosInstance.get(`/posts/user/${username}`);
       set({ posts: res.data, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
+  },
+
+  savePosts: async (postId) => {
+    try {
+      set({ savePostLoading: true });
+
+      const res = await axiosInstance.post(`/posts/save/${postId}`);
+
+      set({
+        savedPosts: res.data.savedPosts,
+      });
+      toast.success("Post saved successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to save post");
+    } finally {
+      set({ savePostLoading: false });
+    }
+  },
+  getSavedPosts: async () => {
+    set({ isLoading: true });
+    try {
+      const res = await axiosInstance.get("/posts/saved");
+      set({ savedPosts: res.data, isLoading: false });
     } catch {
       set({ isLoading: false });
     }
