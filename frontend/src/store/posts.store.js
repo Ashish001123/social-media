@@ -21,12 +21,12 @@ const usePostsStore = create((set) => ({
     }
   },
   fetchSavedPosts: async () => {
-    set({ isLoading: true });
+    set({ savePostLoading: true });
     try {
       const res = await axiosInstance.get("/posts/saved");
-      set({ savedPosts: res.data, isLoading: false });
+      set({ savedPosts: res.data, savePostLoading: false });
     } catch (error) {
-      set({ error: error.message, isLoading: false });
+      set({ error: error.message, savePostLoading: false });
     }
   },
 
@@ -139,22 +139,59 @@ const usePostsStore = create((set) => ({
     }
   },
 
-  savePosts: async (postId) => {
-    try {
-      set({ savePostLoading: true });
+  // savePosts: async (postId) => {
+  //   try {
+  //     set({ savePostLoading: true });
 
-      const res = await axiosInstance.post(`/posts/save/${postId}`);
+  //     const res = await axiosInstance.post(`/posts/save/${postId}`);
 
-      set({
-        savedPosts: res.data.savedPosts,
-      });
-      toast.success("Post saved successfully!");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to save post");
-    } finally {
-      set({ savePostLoading: false });
-    }
-  },
+  //     set({
+  //       savedPosts: res.data.savedPosts,
+  //     });
+  //     toast.success("Post saved successfully!");
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.message || "Failed to save post");
+  //   } finally {
+  //     set({ savePostLoading: false });
+  //   }
+  // },
+
+savePosts: async (postId) => {
+  try {
+    set({ savePostLoading: true });
+
+    const res = await axiosInstance.post(`/posts/save/${postId}`);
+
+    set((state) => {
+      const alreadySaved = state.savedPosts.some(
+        (post) => post._id === postId
+      );
+
+      if (alreadySaved) {
+        // 🔥 Remove from saved (unsave)
+        return {
+          savedPosts: state.savedPosts.filter(
+            (post) => post._id !== postId
+          ),
+        };
+      } else {
+        // 🔥 Add newly saved post
+        return {
+          savedPosts: [...state.savedPosts, res.data],
+        };
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    set({ savePostLoading: false });
+  }
+},
+
+
+
+
   getSavedPosts: async () => {
     set({ isLoading: true });
     try {

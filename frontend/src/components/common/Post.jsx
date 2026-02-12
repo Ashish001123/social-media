@@ -14,24 +14,30 @@ const Post = ({ post }) => {
   const { authUser } = useAuthStore();
   if (!authUser || !post || !post.user) return null;
 
-  const isLiked = post.likes?.some(
-    (id) => id?.toString() === authUser._id
-  );
+  const isLiked = post.likes?.some((id) => id?.toString() === authUser._id);
 
   const postOwner = post.user;
   const isMyPost = true;
   const formattedDate = "1h";
   const isCommenting = false;
-  
 
-  const { deletePost, isDeleting, likeOnPost, isLiking, commentOnPost , savePosts , savePostLoading , savedPosts } = usePostsStore();
+  const {
+    deletePost,
+    isDeleting,
+    likeOnPost,
+    isLiking,
+    commentOnPost,
+    savePosts,
+    savePostLoading,
+    savedPosts,
+  } = usePostsStore();
 
   const handleDeletePost = () => {
     deletePost(post._id);
   };
-  const isSaved = savedPosts.some(
-  (savedPost) => savedPost._id === post._id
-);
+  // const isSaved = savedPosts.some((savedPost) => savedPost._id === post._id);
+  const isSaved = authUser.savedPosts?.includes(post._id);
+
 
   const handlePostComment = (e) => {
     e.preventDefault();
@@ -192,21 +198,17 @@ const Post = ({ post }) => {
             {/* <div className="flex w-1/3 justify-end gap-2 items-center">
               <FaRegBookmark className="w-4 h-4 text-slate-500 cursor-pointer" />
             </div> */}
-            <div
-  className="cursor-pointer"
-  onClick={() => savePosts(post._id)}
->
-  {savePostLoading ? (
-    <LoadingSpinner size="sm" />
-  ) : (
-    <FaRegBookmark
-      className={`w-4 h-4 ${
-        isSaved ? "text-yellow-400" : "text-slate-500"
-      }`}
-    />
-  )}
-</div>
-
+            <div className="cursor-pointer" onClick={() => savePosts(post._id)}>
+              {savePostLoading ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <FaRegBookmark
+                  className={`w-4 h-4 ${
+                    isSaved ? "text-yellow-400" : "text-slate-500"
+                  }`}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
