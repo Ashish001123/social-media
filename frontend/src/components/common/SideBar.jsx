@@ -6,6 +6,8 @@ import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import useAuthStore from "../../store/auth.store.js";
+import { FaBookmark } from "react-icons/fa";
+
 
 const Sidebar = () => {
   const { authUser, logout } = useAuthStore();
@@ -34,6 +36,16 @@ const Sidebar = () => {
               <span className="text-lg hidden md:block">Notifications</span>
             </Link>
           </li>
+          
+          <li className="flex justify-center md:justify-start">
+            <Link
+              to={`/saved`}
+              className="flex gap-3 items-center hover:bg-stone-900 transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
+            >
+               <FaBookmark className="w-6 h-6" />
+              <span className="text-lg hidden md:block">Saved</span>
+            </Link>
+          </li>
           <li className="flex justify-center md:justify-start">
             <Link
               to={`/profile/${authUser?.username}`}
@@ -41,15 +53,6 @@ const Sidebar = () => {
             >
               <FaUser className="w-6 h-6" />
               <span className="text-lg hidden md:block">Profile</span>
-            </Link>
-          </li>
-          <li className="flex justify-center md:justify-start">
-            <Link
-              to={`/saved`}
-              className="flex gap-3 items-center hover:bg-stone-900 transition-all rounded-full duration-300 py-2 pl-2 pr-4 max-w-fit cursor-pointer"
-            >
-              <FaUser className="w-6 h-6" />
-              <span className="text-lg hidden md:block">Saved</span>
             </Link>
           </li>
         </ul>
