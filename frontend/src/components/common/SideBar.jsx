@@ -1,5 +1,4 @@
 import XSvg from "../svgs/X";
-
 import { MdHomeFilled } from "react-icons/md";
 import { IoNotifications } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
@@ -7,7 +6,6 @@ import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import useAuthStore from "../../store/auth.store.js";
 import { FaBookmark } from "react-icons/fa";
-
 
 const Sidebar = () => {
   const { authUser, logout } = useAuthStore();

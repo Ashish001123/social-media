@@ -10,6 +10,8 @@ const useAuthStore = create((set) => ({
   error: null,
   profileLoading: false,
 
+   setAuthUser: (user) => set({ authUser: user }),
+
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/me");

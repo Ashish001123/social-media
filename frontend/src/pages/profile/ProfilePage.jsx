@@ -44,9 +44,16 @@ const ProfilePage = () => {
     if (!authLoading && !authUser) navigate("/login");
   }, [authLoading, authUser, navigate]);
 
+  // useEffect(() => {
+  //   if (!isMyProfile && username) fetchProfileUser(username);
+  // }, [username, isMyProfile, fetchProfileUser]);
+
   useEffect(() => {
-    if (!isMyProfile && username) fetchProfileUser(username);
-  }, [username, isMyProfile, fetchProfileUser]);
+  if (!username) return;
+  if (!isMyProfile) {
+    fetchProfileUser(username);
+  }
+}, [username, isMyProfile]);
 
   useEffect(() => {
     if (!username) return;
