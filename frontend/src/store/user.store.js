@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axiosInstance from "../config/axios.js";
 import toast from "react-hot-toast";
-import useAuthStore from "./auth.store.js";
 
 const useUserStore = create((set) => ({
   user: null,
@@ -26,7 +25,7 @@ const useUserStore = create((set) => ({
       await axiosInstance.post(`/users/follow/${userId}`);
       set({ isFollowLoading: false });
       const suggestedUsers = await axiosInstance.get("/users/suggested");
-      set({ suggestedUsers: suggestedUsers.data , isFollowLoading: false });
+      set({ suggestedUsers: suggestedUsers.data, isFollowLoading: false });
     } catch (error) {
       set({ error: error.message, isFollowLoading: false });
     }
@@ -40,46 +39,17 @@ const useUserStore = create((set) => ({
       set({ error: error.message, isLoading: false });
     }
   },
-  // updateProfile: async (profileData) => {
-  //   set({ isUpdatingProfile: true, error: null });
-  //   try {
-  //     const res = await axiosInstance.post("/users/update", profileData);
-  //     set({ user: res.data, isUpdatingProfile: false });
-  //     toast.success("Profile updated successfully!");
-  //   } catch (error) {
-  //     set({ error: error.message, isUpdatingProfile: false });
-  //     toast.error("Failed to update profile");
-  //   }
-  // },
-  updateProfile: async (profileData) => {
-  set({ isUpdatingProfile: true, error: null });
-  try {
-    const res = await axiosInstance.post("/users/update", profileData);
+  deleteAllNotifications: async () => {
+    set({ isLoading: true });
+    try {
+      await axiosInstance.delete("/notifications");
+      set({ notifications: [], isLoading: false });
 
-    // Update auth store directly 🔥
-    useAuthStore.getState().setAuthUser(res.data);
-
-    set({ isUpdatingProfile: false });
-    toast.success("Profile updated successfully!");
-  } catch (error) {
-    set({ error: error.message, isUpdatingProfile: false });
-    toast.error("Failed to update profile");
-  }
-},
-
- deleteAllNotifications: async () => {
-  set({ isLoading: true });
-  try {
-    await axiosInstance.delete("/notifications");
-    set({ notifications: [], isLoading: false });
-
-    toast.success("Notifications deleted successfully!");
-  } catch (error) {
-    set({ error: error.message, isLoading: false });
-    toast.error("Failed to delete notifications");
-  }
-}
-
-
+      toast.success("Notifications deleted successfully!");
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+      toast.error("Failed to delete notifications");
+    }
+  },
 }));
 export default useUserStore;

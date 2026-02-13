@@ -20,14 +20,13 @@ const LoginPage = () => {
     e.preventDefault();
     await login(formData);
     setFormData({ username: "", password: "" });
-    // Navigate to home after successful login
     navigate("/");
   };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+   
   return (
     <div className="max-w-screen-xl mx-auto flex h-screen">
       <div className="flex-1 hidden lg:flex items-center  justify-center">

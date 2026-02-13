@@ -150,7 +150,7 @@ export const updateUserProfile = async (req, res) => {
     user.coverImg = coverImg || user.coverImg;
     await user.save();
     user.password = null;
-    res.status(200).json({ user });
+    res.status(200).json(user);
   } catch (error) {
     console.log("Error in updateUserProfile:", error);
     res.status(500).json({ message: "Internal server error" });

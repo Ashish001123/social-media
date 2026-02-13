@@ -29,16 +29,14 @@ const Post = ({ post }) => {
     commentOnPost,
     savePosts,
     savePostLoading,
-    savedPosts,
+ 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   } = usePostsStore();
-
+      
   const handleDeletePost = () => {
     deletePost(post._id);
   };
-  // const isSaved = savedPosts.some((savedPost) => savedPost._id === post._id);
   const isSaved = authUser.savedPosts?.includes(post._id);
-
-
   const handlePostComment = (e) => {
     e.preventDefault();
     commentOnPost(post._id, comment);

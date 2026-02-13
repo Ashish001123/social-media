@@ -143,8 +143,6 @@ export const likeOnPost = async (req, res) => {
 };
 
 
-
-
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
@@ -189,8 +187,6 @@ export const getLikedPosts = async (req, res) => {
   }
 };
 
-
-
 export const getFollowingPosts = async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id).select("following");
@@ -220,6 +216,7 @@ export const getUserPosts = async (req, res) => {
 
     const posts = await Post.find({ user: user._id })
       .populate("user", "-password")
+      .populate("comments.user", "-password") 
       .sort({ createdAt: -1 });
 
     res.status(200).json(posts);
@@ -274,7 +271,8 @@ export const getSavedPosts = async (req, res) => {
       _id: { $in: user.savedPosts },
     })
       .populate("user", "-password")
-      .populate("comments.user", "-password");
+      .populate("comments.user", "-password") 
+      .sort({ createdAt: -1 });
 
     res.status(200).json(savedPosts);
   } catch (error) {

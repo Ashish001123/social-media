@@ -10,7 +10,6 @@ const usePostsStore = create((set) => ({
   isLiking: false,
   savePostLoading: false,
   savedPosts: [],
-
   fetchPosts: async () => {
     set({ isLoading: true });
     try {
@@ -29,7 +28,6 @@ const usePostsStore = create((set) => ({
       set({ error: error.message, savePostLoading: false });
     }
   },
-
   createPost: async (postData) => {
     set({ isPending: true, error: null });
     try {
@@ -74,12 +72,15 @@ const usePostsStore = create((set) => ({
         posts: state.posts.map((post) =>
           post._id === postId ? res.data.post : post,
         ),
+        savedPosts: state.savedPosts.map((post) =>
+        post._id === postId ? res.data.post : post
+      ),
         isLiking: false,
       }));
     } catch (error) {
       set({
         error: error.response?.data?.message || "Something went wrong",
-        isLiking: false,
+        isLiking: false, 
       });
     }
   },
@@ -92,6 +93,9 @@ const usePostsStore = create((set) => ({
         posts: state.posts.map((post) =>
           post._id === postId ? res.data.post : post,
         ),
+      savedPosts: state.savedPosts.map((post) =>
+        post._id === postId ? res.data.post : post
+      ),
       }));
     } catch (error) {
       set({
@@ -139,23 +143,6 @@ const usePostsStore = create((set) => ({
     }
   },
 
-  // savePosts: async (postId) => {
-  //   try {
-  //     set({ savePostLoading: true });
-
-  //     const res = await axiosInstance.post(`/posts/save/${postId}`);
-
-  //     set({
-  //       savedPosts: res.data.savedPosts,
-  //     });
-  //     toast.success("Post saved successfully!");
-  //   } catch (error) {
-  //     toast.error(error.response?.data?.message || "Failed to save post");
-  //   } finally {
-  //     set({ savePostLoading: false });
-  //   }
-  // },
-
 savePosts: async (postId) => {
   try {
     set({ savePostLoading: true });
@@ -166,22 +153,18 @@ savePosts: async (postId) => {
       const alreadySaved = state.savedPosts.some(
         (post) => post._id === postId
       );
-
       if (alreadySaved) {
-        // 🔥 Remove from saved (unsave)
-        return {
+        return { 
           savedPosts: state.savedPosts.filter(
             (post) => post._id !== postId
           ),
         };
       } else {
-        // 🔥 Add newly saved post
         return {
           savedPosts: [...state.savedPosts, res.data],
-        };
+        }; 
       }
     });
-
   } catch (error) {
     console.error(error);
   } finally {
